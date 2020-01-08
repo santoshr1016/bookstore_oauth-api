@@ -1,7 +1,6 @@
 package db
 
 import (
-	"fmt"
 	"github.com/santoshr1016/bookstore_oauth-api/src/clients/cassandra"
 	"github.com/santoshr1016/bookstore_oauth-api/src/domain/access_token"
 	"github.com/santoshr1016/bookstore_oauth-api/src/utils/errors"
@@ -29,15 +28,17 @@ type dbRepository struct {
 
 func (db *dbRepository)GetById(id string)(*access_token.AccessToken, *errors.RestError) {
 	//TODO implement get access token from Cassandra DB
-	session, err := cassandra.GetSession()
-	if err != nil {
-		//panic(err)
-		return nil, errors.NewInternalServerError(err.Error())
-	}
-	defer session.Close()
-	fmt.Println("Connection created")
+	//session, err := cassandra.GetSession()
+	//if err != nil {
+	//	//panic(err)
+	//	return nil, errors.NewInternalServerError(err.Error())
+	//}
+	//defer session.Close()
+	//fmt.Println("Connection created")
+	// TODO Using Single Global Cassandra Session
 	var result access_token.AccessToken
-	if err := session.Query(queryGetAccessToken, id).Scan(
+	//if err := session.Query(queryGetAccessToken, id).Scan(
+	if err := cassandra.GetSession().Query(queryGetAccessToken, id).Scan(
 		&result.AccessToken,
 		&result.UserId,
 		&result.ClientId,
@@ -53,13 +54,15 @@ func (db *dbRepository)GetById(id string)(*access_token.AccessToken, *errors.Res
 }
 
 func (db *dbRepository)Create(at access_token.AccessToken) *errors.RestError  {
-	session, err := cassandra.GetSession()
-	if err != nil {
-		//panic(err)
-		return errors.NewInternalServerError(err.Error())
-	}
-	defer session.Close()
-	if err := session.Query(queryCreateAccessToken,
+	//session, err := cassandra.GetSession()
+	//if err != nil {
+	//	//panic(err)
+	//	return errors.NewInternalServerError(err.Error())
+	//}
+	//defer session.Close()
+	// TODO Using Single Global Cassandra Session
+	//if err := session.Query(queryCreateAccessToken,
+	if err := cassandra.GetSession().Query(queryCreateAccessToken,
 		at.AccessToken,
 		at.UserId,
 		at.ClientId,
@@ -72,13 +75,14 @@ func (db *dbRepository)Create(at access_token.AccessToken) *errors.RestError  {
 }
 
 func (db *dbRepository)UpdateExpirationTime(at access_token.AccessToken) *errors.RestError  {
-	session, err := cassandra.GetSession()
-	if err != nil {
-		//panic(err)
-		return errors.NewInternalServerError(err.Error())
-	}
-	defer session.Close()
-	if err := session.Query(queryUpdateAccessToken,
+	//session, err := cassandra.GetSession()
+	//if err != nil {
+	//	//panic(err)
+	//	return errors.NewInternalServerError(err.Error())
+	//}
+	//defer session.Close()
+	// TODO Using Single Global Cassandra Session
+	if err := cassandra.GetSession().Query(queryUpdateAccessToken,
 		at.AccessToken,
 		at.Expires,
 	).Exec(); err != nil {
